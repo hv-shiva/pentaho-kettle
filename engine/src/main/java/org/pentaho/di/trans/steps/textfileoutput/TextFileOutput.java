@@ -32,13 +32,12 @@ import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.compress.CompressionOutputStream;
-import org.pentaho.di.core.compress.zip.ZIPCompressionProvider;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.WriterOutputStream;
+import org.pentaho.di.core.compress.CompressionOutputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
+import org.pentaho.di.core.compress.zip.ZIPCompressionProvider;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -46,6 +45,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -1028,9 +1028,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     JSONArray textFileFields = new JSONArray();
     ObjectMapper objectMapper = new ObjectMapper();
     for ( TextFileOutputFieldDTO textFileOutputFieldDTO : getUpdatedTextFields() ) {
-      textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString(textFileOutputFieldDTO) ) );
+      textFileFields.add( objectMapper.readTree( objectMapper.writeValueAsString( textFileOutputFieldDTO ) ) );
     }
-    jsonObject.put( "updatedData",textFileFields );
+    jsonObject.put( "updatedData", textFileFields );
     return jsonObject;
   }
 

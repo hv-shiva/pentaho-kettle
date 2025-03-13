@@ -249,13 +249,13 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getCheckSumTypes( Map<String, String> queryParamToValues ) {
+  private JSONObject getCheckSumTypesAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray checkSumTypes = new JSONArray();
     for ( int i = 0; i < CheckSumMeta.checksumtypeDescs.length; i++ ) {
       JSONObject checkSumType = new JSONObject();
-      checkSumType.put( "id", CheckSumMeta.checksumtypeCodes[i] );
-      checkSumType.put( "name", CheckSumMeta.checksumtypeDescs[i] );
+      checkSumType.put( "id", CheckSumMeta.checksumtypeCodes[ i ] );
+      checkSumType.put( "name", CheckSumMeta.checksumtypeDescs[ i ] );
       checkSumTypes.add( checkSumType );
     }
 
@@ -265,13 +265,13 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getEvaluationMethods( Map<String, String> queryParamToValues ) {
+  private JSONObject getEvaluationMethodsAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray evaluationMethods = new JSONArray();
     for ( int i = 0; i < CheckSumMeta.EVALUATION_METHOD_DESCS.length; i++ ) {
       JSONObject evaluationMethod = new JSONObject();
-      evaluationMethod.put( "id", CheckSumMeta.EVALUATION_METHOD_CODES[i] );
-      evaluationMethod.put( "name", CheckSumMeta.EVALUATION_METHOD_DESCS[i] );
+      evaluationMethod.put( "id", CheckSumMeta.EVALUATION_METHOD_CODES[ i ] );
+      evaluationMethod.put( "name", CheckSumMeta.EVALUATION_METHOD_DESCS[ i ] );
       evaluationMethods.add( evaluationMethod );
     }
 
@@ -281,13 +281,13 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getResultTypes( Map<String, String> queryParamToValues ) {
+  private JSONObject getResultTypesAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
     JSONArray resultTypes = new JSONArray();
     for ( int i = 0; i < CheckSumMeta.resultTypeCode.length; i++ ) {
       JSONObject resultType = new JSONObject();
-      resultType.put( "id", CheckSumMeta.resultTypeCode[i] );
-      resultType.put( "name", CheckSumMeta.resultTypeCode[i] );
+      resultType.put( "id", CheckSumMeta.resultTypeCode[ i ] );
+      resultType.put( "name", CheckSumMeta.resultTypeCode[ i ] );
       resultTypes.add( resultType );
     }
 

@@ -13,6 +13,17 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
@@ -67,17 +78,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
 import org.pentaho.di.workarounds.BufferedOutputStreamWithCloseDetection;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class ExcelWriterStep extends BaseStep implements StepInterface {
 
@@ -1054,7 +1054,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     for ( ExcelWriterStepField item : excelWriterStepMeta.getOutputFields() ) {
       ExcelWriterStepFieldDTO field = new ExcelWriterStepFieldDTO();
       field.setFormat( formatType( item.getType() ) );
-      field.setType( item.getTypeDesc());
+      field.setType( item.getTypeDesc() );
       field.setCommentField( item.getCommentField() );
       field.setCommentAuthorField( item.getCommentAuthorField() );
       field.setStyleCell( item.getStyleCell() );

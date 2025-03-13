@@ -650,7 +650,7 @@ public class Calculator extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getCalcTypes( Map<String, String> queryParams ) {
+  private JSONObject getCalcTypesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray calculatorArray = new JSONArray();
     for ( int i = 0; i < CalculatorMetaFunction.calc_desc.length; i++ ) {
@@ -666,7 +666,7 @@ public class Calculator extends BaseStep implements StepInterface {
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject getCalcFields( Map<String, String> queryParams ) throws KettleStepException {
+  private JSONObject getCalcFieldsAction( Map<String, String> queryParams ) throws KettleStepException {
     JSONObject response = new JSONObject();
     JSONArray fieldsArray = new JSONArray();
     String stepName = Objects.toString( queryParams.get( "stepName" ) );

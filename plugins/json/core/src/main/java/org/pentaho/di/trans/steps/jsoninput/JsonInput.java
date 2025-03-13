@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.jsoninput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -69,6 +70,8 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   private RowOutputConverter rowOutputConverter;
 
   private static final byte[] EMPTY_JSON = "{}".getBytes(); // for replacing null inputs
+  private static final String OBJECT = "Object";
+  private static final String ARRAY = "Array";
 
   public JsonInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                     Trans trans ) {
@@ -242,6 +245,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     }
     return true;
   }
+
   /**
    * Extracts distinct key-value pairs from the JSON structure.
    *
@@ -251,9 +255,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   public JSONObject convertToJsonObject( Node node ) {
     JSONObject response = new JSONObject();
     if ( Objects.nonNull( node ) ) {
-      if ( "Object".equals( node.getType() ) ) {
+      if ( OBJECT.equals( node.getType() ) ) {
         response.put( node.getKey() == null ? StringUtils.EMPTY : node.getKey(), processObject( node ) );
-      } else if ( "Array".equals( node.getType() ) ) {
+      } else if ( ARRAY.equals( node.getType() ) ) {
         response.put( node.getKey(), processArray( node ) );
       } else {
         response.put( node.getKey(), processValues( node ) );
@@ -269,7 +273,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
    * @return The value of the node.
    */
   private Object processValues( Node node ) {
-    return ( ( ValueNode ) node ).getValue();
+    return ( (ValueNode) node ).getValue();
   }
 
   /**
@@ -281,9 +285,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   private JSONArray processArray( Node node ) {
     JSONArray array = new JSONArray();
     for ( Node child : node.getChildren() ) {
-      if ( "Object".equals( child.getType() ) ) {
+      if ( OBJECT.equals( child.getType() ) ) {
         array.add( processObject( child ) );
-      } else if ( "Array".equals( child.getType() ) ) {
+      } else if ( ARRAY.equals( child.getType() ) ) {
         array.add( processArray( child ) );
       } else {
         array.add( processValues( child ) );
@@ -301,9 +305,9 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   private Map<String, Object> processObject( Node node ) {
     Map<String, Object> linkedHashMap = new LinkedHashMap<>();
     for ( Node child : node.getChildren() ) {
-      if ( "Object".equals( child.getType() ) ) {
+      if ( OBJECT.equals( child.getType() ) ) {
         linkedHashMap.put( child.getKey(), processObject( child ) );
-      } else if ( "Array".equals( child.getType() ) ) {
+      } else if ( ARRAY.equals( child.getType() ) ) {
         linkedHashMap.put( child.getKey(), processArray( child ) );
       } else {
         linkedHashMap.put( child.getKey(), processValues( child ) );
@@ -313,7 +317,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
-  private JSONObject selectFields( Map<String, String> queryParamToValues ) {
+  private JSONObject selectFieldsAction( Map<String, String> queryParamToValues ) {
     JSONObject response = new JSONObject();
 
     try {
@@ -339,7 +343,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     return response;
   }
 
-  private JSONObject getFiles( Map<String, String> queryParams ) {
+  private JSONObject getFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
 
     JsonInputMeta jsonInputMeta = (JsonInputMeta) getStepMetaInterface();
@@ -351,9 +355,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     if ( files == null || files.length == 0 ) {
       response.put( "message", BaseMessages.getString( PKG, "JsonInputDialog.NoFilesFound.DialogMessage" ) );
     } else {
-      for ( String file : files ) {
-        fileList.add( file );
-      }
+      fileList.addAll( Arrays.asList( files ) );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     }
 

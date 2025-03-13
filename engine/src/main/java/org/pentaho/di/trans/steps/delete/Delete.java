@@ -331,7 +331,9 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONArray getTableFieldsAndType( String connection, String schema, String table ) {
-    DatabaseMeta databaseMeta = Optional.ofNullable( getTransMeta().findDatabase( connection ) ).orElseThrow( () -> new IllegalArgumentException( BaseMessages.getString( PKG, "Delete.DatabaseConnectionNotFound" ) + connection ) );
+    DatabaseMeta databaseMeta = Optional.ofNullable( getTransMeta().findDatabase( connection ) ).orElseThrow(
+      () -> new IllegalArgumentException(
+        BaseMessages.getString( PKG, "Delete.DatabaseConnectionNotFound" ) + connection ) );
     LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Delete Step", LoggingObjectType.STEP, null );
 
     try ( Database db = new Database( loggingObject, databaseMeta ) ) {

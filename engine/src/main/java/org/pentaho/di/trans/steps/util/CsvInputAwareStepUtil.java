@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2024 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2025 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,8 +42,10 @@ import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 public interface CsvInputAwareStepUtil {
 
   /**
-   * @param meta
-   * @return
+   * Retrieves the field names from the CSV input metadata.
+   *
+   * @param meta the CSV input metadata
+   * @return an array of field names
    */
   default String[] getFieldNames( final CsvInputAwareMeta meta ) {
     String[] fieldNames = new String[] {};
@@ -64,10 +66,12 @@ public interface CsvInputAwareStepUtil {
   }
 
   /**
-   * @param reader
-   * @param meta
-   * @return
-   * @throws KettleException
+   * Retrieves the field names from the CSV input metadata using the provided reader.
+   *
+   * @param reader the buffered input stream reader for reading the CSV file
+   * @param meta   the CSV input metadata
+   * @return an array of field names
+   * @throws KettleException if an error occurs while retrieving the field names
    */
   default String[] getFieldNamesImpl( final BufferedInputStreamReader reader, final CsvInputAwareMeta meta )
     throws KettleException {
@@ -145,18 +149,31 @@ public interface CsvInputAwareStepUtil {
   }
 
   /**
-   * @param meta
-   * @param inputStream
-   * @return
+   * Creates a buffered input stream reader for the given CSV input metadata and input stream.
+   *
+   * @param meta        the CSV input metadata
+   * @param inputStream the input stream to read from
+   * @return a BufferedInputStreamReader for reading the CSV file
    */
   default BufferedInputStreamReader getBufferedReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
     return new BufferedInputStreamReader( getReader( meta, inputStream ) );
   }
 
+  /**
+   * Logs an error message along with an exception.
+   *
+   * @param message   the error message to log
+   * @param exception the exception to log
+   */
   default void logError( final String message, final Exception exception ) {
     logChannel().logError( message, exception );
   }
 
+  /**
+   * Logs an error message.
+   *
+   * @param message the error message to log
+   */
   default void logError( final String message ) {
     logChannel().logError( message );
   }

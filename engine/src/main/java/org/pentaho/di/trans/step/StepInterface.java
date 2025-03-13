@@ -29,7 +29,6 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -522,7 +521,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   void setStepMetaInterface( StepMetaInterface stepMetaInterface );
 
   /**
-   * Dynamically invokes a method in the step(this) class based on the `fieldName` parameter using java reflection
+   * Dynamically invokes a method in the Step class based on the `fieldName` parameter using java reflection
    *
    * @param fieldName         the name of the field to be used to determine the method to invoke
    * @param stepMetaInterface the step metadata interface
@@ -540,13 +539,13 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
       response = (JSONObject) actionMethod.invoke( this, queryParams );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
 
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      getLogChannel().logError( e.getMessage() );
-      if ( e.getCause() instanceof KettleException ) {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
+      if ( ex.getCause() instanceof KettleException ) {
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
       } else {
-        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
+        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
       }
+      getLogChannel().logError( ex.getMessage() );
     }
     return response;
   }

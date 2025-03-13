@@ -14,7 +14,11 @@
 package org.pentaho.di.trans.steps.salesforceupdate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.bind.XmlObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -34,10 +38,6 @@ import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStep;
 import org.pentaho.di.trans.steps.salesforce.SalesforceStepMeta;
 import org.pentaho.di.trans.steps.salesforceutils.SalesforceUtils;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.sforce.soap.partner.sobject.SObject;
-import com.sforce.ws.bind.XmlObject;
 
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
@@ -313,9 +313,7 @@ public class SalesforceUpdate extends SalesforceStep {
     try {
       String[] moduleFields = getModuleFields();
       JSONArray moduleFieldsList = new JSONArray();
-      for ( String module : moduleFields ) {
-        moduleFieldsList.add( module );
-      }
+      moduleFieldsList.addAll( Arrays.asList( moduleFields ) );
       response.put( "moduleFields", moduleFieldsList );
       response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
     } catch ( Exception e ) {
@@ -326,7 +324,6 @@ public class SalesforceUpdate extends SalesforceStep {
   }
 
   public String[] getModuleFields() throws Exception {
-
     SalesforceConnection connection = null;
     try {
       SalesforceStepMeta salesforceStepMeta = (SalesforceStepMeta) getStepMetaInterface();
@@ -340,7 +337,6 @@ public class SalesforceUpdate extends SalesforceStep {
       connection.connect();
 
       return connection.getFields( salesforceStepMeta.getModule() );
-
     } catch ( Exception e ) {
       throw new Exception( e );
     } finally {
@@ -348,10 +344,10 @@ public class SalesforceUpdate extends SalesforceStep {
         try {
           connection.close();
         } catch ( Exception e ) { /* Ignore */
+          logError( e.getMessage() );
         }
       }
     }
   }
-
 
 }
