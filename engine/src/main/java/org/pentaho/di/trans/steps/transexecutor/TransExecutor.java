@@ -615,6 +615,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject parametersAction( Map<String, String> queryParams ) throws KettleException {
     TransExecutorMeta transExecutorMeta = (TransExecutorMeta) getStepMetaInterface();
 

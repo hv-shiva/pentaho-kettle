@@ -13,6 +13,8 @@
 
 package org.pentaho.di.trans.step;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +29,7 @@ import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -35,10 +38,11 @@ import org.pentaho.metastore.api.IMetaStore;
 
 /**
  * The interface that any transformation step or plugin needs to implement.
- * <p>
+ *
  * Created on 12-AUG-2004
  *
  * @author Matt
+ *
  */
 
 public interface StepInterface extends VariableSpace, HasLogChannelInterface {
@@ -507,10 +511,43 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
     getOutputRowSets().add( rowSet );
   }
 
+  /**
+   * @return Returns the stepMetaInterface.
+   */
+  StepMetaInterface getStepMetaInterface();
+
+  /**
+   * @param stepMetaInterface The stepMetaInterface to set.
+   */
+  void setStepMetaInterface( StepMetaInterface stepMetaInterface );
+
+  /**
+   * Dynamically invokes a method in the step(this) class based on the `fieldName` parameter using java reflection
+   *
+   * @param fieldName         the name of the field to be used to determine the method to invoke
+   * @param stepMetaInterface the step metadata interface
+   * @param transMeta         the transformation metadata
+   * @param trans             the transformation
+   * @param queryParams       the query parameters to be passed to the invoked method
+   * @return a `JSONObject` containing the response of the invoked method and the action status
+   */
   default JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
                                Trans trans, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
+    try {
+      Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setStepMetaInterface( stepMetaInterface );
+      response = (JSONObject) actionMethod.invoke( this, queryParams );
+      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
+      getLogChannel().logError( e.getMessage() );
+      if ( e.getCause() instanceof KettleException ) {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
+      } else {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
+      }
+    }
     return response;
   }
 

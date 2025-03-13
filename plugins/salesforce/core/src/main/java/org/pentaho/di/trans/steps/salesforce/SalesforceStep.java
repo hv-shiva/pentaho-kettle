@@ -30,10 +30,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.TimeZone;
 
 
@@ -136,22 +133,6 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       value = Ints.checkedCast( (Long) value );
     }
     return value;
-  }
-
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceStep.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked

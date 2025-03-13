@@ -13,8 +13,6 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Map;
@@ -248,20 +246,6 @@ public class CheckSum extends BaseStep implements StepInterface {
     }
 
     return hexString.toString();
-  }
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                             Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = CheckSum.class.getDeclaredMethod( fieldName, Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked

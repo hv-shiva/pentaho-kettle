@@ -14,30 +14,31 @@
 package org.pentaho.di.trans.steps.delete;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.*;
-import java.util.Collections;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Optional;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LoggingObjectType;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
-import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.step.BaseDatabaseStep;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Delete data in a database table.
@@ -256,21 +257,6 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
     super.dispose( smi, sdi );
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = Delete.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject getTableFieldAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
@@ -343,6 +329,7 @@ public class Delete extends BaseDatabaseStep implements StepInterface {
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONArray getTableFieldsAndType( String connection, String schema, String table ) {
     DatabaseMeta databaseMeta = Optional.ofNullable( getTransMeta().findDatabase( connection ) ).orElseThrow( () -> new IllegalArgumentException( BaseMessages.getString( PKG, "Delete.DatabaseConnectionNotFound" ) + connection ) );
     LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Delete Step", LoggingObjectType.STEP, null );

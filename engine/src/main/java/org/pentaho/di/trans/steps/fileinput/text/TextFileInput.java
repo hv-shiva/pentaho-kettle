@@ -15,8 +15,6 @@ package org.pentaho.di.trans.steps.fileinput.text;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -60,9 +58,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputStep;
 import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
@@ -122,23 +119,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return true;
   }
 
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = TextFileInput.class.getDeclaredMethod( fieldName + "Action", Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
-  }
-
-
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject setMinimalWidthAction( Map<String, String> queryParams ) throws JsonProcessingException {
     JSONObject jsonObject = new JSONObject();
     JSONArray textFileFields = new JSONArray();
@@ -188,6 +169,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return textFileFields;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getFieldsAction( Map<String, String> queryParams ) throws KettleException, JsonProcessingException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
@@ -677,6 +659,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return fields;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject getFieldNamesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();
@@ -688,6 +671,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   private JSONObject showFilesAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
 
@@ -720,6 +704,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject validateShowContentAction( Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
     TextFileInputMeta meta = (TextFileInputMeta) getStepMetaInterface();
@@ -733,6 +718,7 @@ public class TextFileInput extends BaseFileInputStep<TextFileInputMeta, TextFile
     return response;
   }
 
+  @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked
   public JSONObject showContentAction( Map<String, String> queryParams ) throws KettleException {
     JSONObject response = new JSONObject();
     JSONArray jsonArray = new JSONArray();

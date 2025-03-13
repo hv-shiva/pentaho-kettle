@@ -15,14 +15,11 @@ package org.pentaho.di.trans.steps.salesforceinput;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -459,24 +456,6 @@ public class SalesforceInput extends SalesforceStep {
       data.endCal = null;
     }
     super.dispose( smi, sdi );
-  }
-
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = SalesforceInput.class.getDeclaredMethod( fieldName + "Action" );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
-    } catch ( NoSuchMethodException e ) {
-      return super.doAction( fieldName, stepMetaInterface, transMeta, trans, queryParamToValues );
-    } catch ( InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
   }
 
   @SuppressWarnings( "java:S1144" ) // Using reflection this method is being invoked

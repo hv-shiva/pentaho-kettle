@@ -13,9 +13,12 @@
 
 package org.pentaho.di.job.entry;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -751,7 +754,21 @@ public interface JobEntryInterface {
   default JSONObject doAction( String fieldName, JobEntryInterface jobEntryInterface, JobMeta jobMeta,
                                Job job, Map<String, String> queryParams ) {
     JSONObject response = new JSONObject();
-    response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
+    try {
+      Method actionMethod = this.getClass().getDeclaredMethod( fieldName + "Action", Map.class );
+      this.setRepository( job.getRep() );
+      response = (JSONObject) actionMethod.invoke( this, queryParams );
+      response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.SUCCESS_RESPONSE );
+
+    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex ) {
+      getLogChannel().logError( ex.getMessage() );
+      if ( ex.getCause() instanceof KettleException ) {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_RESPONSE );
+      } else {
+        response.put( JobEntryInterface.ACTION_STATUS, JobEntryInterface.FAILURE_METHOD_NOT_RESPONSE );
+      }
+      response.put( JobEntryInterface.ERROR_DETAILS, ExceptionUtils.getRootCauseMessage( ex ) );
+    }
     return response;
   }
 }

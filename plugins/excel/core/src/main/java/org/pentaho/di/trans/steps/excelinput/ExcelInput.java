@@ -13,21 +13,10 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import org.apache.commons.lang3.StringUtils;
-
-import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -62,6 +51,13 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 import org.pentaho.di.trans.steps.utils.CommonExcelUtils;
 import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * This class reads data from one or more Microsoft Excel files.
@@ -912,21 +908,6 @@ public class ExcelInput extends BaseStep implements StepInterface {
         }
       }
     }
-  }
-
-  @Override
-  public JSONObject doAction( String fieldName, StepMetaInterface stepMetaInterface, TransMeta transMeta,
-                              Trans trans, Map<String, String> queryParamToValues ) {
-    JSONObject response = new JSONObject();
-    try {
-      Method actionMethod = ExcelInput.class.getDeclaredMethod( fieldName, Map.class );
-      this.setStepMetaInterface( stepMetaInterface );
-      response = (JSONObject) actionMethod.invoke( this, queryParamToValues );
-    } catch ( NoSuchMethodException | InvocationTargetException | IllegalAccessException e ) {
-      log.logError( e.getMessage() );
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
-    }
-    return response;
   }
 
   private JSONObject getFiles( Map<String, String> queryParams ) {
