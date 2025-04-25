@@ -51,10 +51,12 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepUtilInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.di.trans.steps.selectvalues.SelectValuesUtil;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -1174,6 +1176,11 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
 
   public StepMeta getExecutorsOutputStepMeta() {
     return executorsOutputStepMeta;
+  }
+
+  @Override
+  public StepUtilInterface getStepUtilInterface() {
+    return new TransExecutorUtil(this);
   }
 
   public void setExecutorsOutputStepMeta( StepMeta executorsOutputStepMeta ) {

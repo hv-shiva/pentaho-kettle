@@ -759,4 +759,8 @@ public interface StepMetaInterface {
   default TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore, VariableSpace space ) throws KettleException {
     return null; // default
   }
+
+  default StepUtilInterface getStepUtilInterface() {
+    return null; // default
+  }
 }

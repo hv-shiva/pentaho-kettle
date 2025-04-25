@@ -50,6 +50,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepUtilInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -903,6 +904,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     return lineages;
   }
 
+  @Override
+  public StepUtilInterface getStepUtilInterface() {
+    return new SelectValuesUtil();
+  }
+
   public static class SelectField implements Cloneable {
 
     /** Select: Name of the selected field */
@@ -962,4 +968,5 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
       }
     }
   }
+
 }
