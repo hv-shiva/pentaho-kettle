@@ -27,6 +27,14 @@ import org.pentaho.di.trans.step.StepInterface;
 
 public class SelectValuesHelper implements StepHelperInterface {
 
+  /**
+   * Executes an action based on the provided field name and query parameters.
+   *
+   * @param fieldName   The name of the field to determine the action to execute.
+   * @param transMeta   The transformation metadata (not used in this implementation).
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the result of the action and its status.
+   */
   @Override
   public JSONObject doAction( String fieldName, TransMeta transMeta,
                               Map<String, String> queryParams ) {
@@ -34,32 +42,39 @@ public class SelectValuesHelper implements StepHelperInterface {
     try {
       switch ( fieldName ) {
         case "locales":
-          response = localesAction( queryParams );
+          response = localesAction();
           break;
         case "timezones":
-          response = timezonesAction( queryParams );
+          response = timezonesAction();
           break;
         case "encodings":
-          response = encodingsAction( queryParams );
+          response = encodingsAction();
           break;
         default:
-          response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+          response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
           break;
       }
-
-      if ( isFailedResponse( response ) ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_RESPONSE );
-      } else if ( response != null ) {
-        response.put( StepInterface.ACTION_STATUS, StepInterface.SUCCESS_RESPONSE );
+      if (!response.containsKey(ACTION_STATUS)) {
+        if ( isFailedResponse( response ) ) {
+          response.put( ACTION_STATUS, FAILURE_RESPONSE );
+        } else if ( response != null ) {
+          response.put( ACTION_STATUS, SUCCESS_RESPONSE );
+        }
       }
     } catch ( Exception e ) {
-      response.put( StepInterface.ACTION_STATUS, StepInterface.FAILURE_METHOD_NOT_RESPONSE );
+      response.put( ACTION_STATUS, FAILURE_METHOD_NOT_RESPONSE );
       //getLogChannel().logError( ex.getMessage() );
     }
     return response;
   }
 
-  public JSONObject localesAction( Map<String, String> queryParams ) {
+  /**
+   * Retrieves the list of available locales and returns them as a JSON object.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of locales.
+   */
+  public JSONObject localesAction() {
     JSONObject response = new JSONObject();
     JSONArray locales = new JSONArray();
     locales.addAll( Arrays.asList( EnvUtil.getLocaleList() ) );
@@ -67,7 +82,13 @@ public class SelectValuesHelper implements StepHelperInterface {
     return response;
   }
 
-  public JSONObject timezonesAction( Map<String, String> queryParams ) {
+  /**
+   * Retrieves the list of available time zones and returns them as a JSON object.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of time zones.
+   */
+  public JSONObject timezonesAction() {
     JSONObject response = new JSONObject();
     JSONArray timezones = new JSONArray();
     timezones.addAll( Arrays.asList( EnvUtil.getTimeZones() ) );
@@ -75,7 +96,13 @@ public class SelectValuesHelper implements StepHelperInterface {
     return response;
   }
 
-  public JSONObject encodingsAction( Map<String, String> queryParams ) {
+  /**
+   * Retrieves the list of available character encodings and returns them as a JSON object.
+   *
+   * @param queryParams A map of query parameters (not used in this implementation).
+   * @return A JSON object containing the list of character encodings.
+   */
+  public JSONObject encodingsAction() {
     JSONObject response = new JSONObject();
     JSONArray encodings = new JSONArray();
     encodings.addAll( Arrays.asList( getCharsets() ) );
@@ -83,6 +110,11 @@ public class SelectValuesHelper implements StepHelperInterface {
     return response;
   }
 
+  /**
+   * Retrieves the list of available character sets.
+   *
+   * @return An array of character set display names.
+   */
   public String[] getCharsets() {
     Collection<Charset> charsetCol = Charset.availableCharsets().values();
     String[] charsets = new String[ charsetCol.size() ];
