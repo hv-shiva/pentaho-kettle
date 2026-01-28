@@ -357,4 +357,45 @@ public class MetaFileLoaderImplTest {
   private String getKey() {
     return specificationMethod + ":" + keyPath;
   }
+
+  @Test
+  public void ensureFilePathHasExtension_AddsCorrectExtensionBasedOnMetaType() throws Exception {
+    Object[][] testData = {
+      { true, "path/to/transformation", "path/to/transformation.ktr" },
+      { true, "path/to/transformation.ktr", "path/to/transformation.ktr" },
+      { true, "file:///home/user/transformation", "file:///home/user/transformation.ktr" },
+      { true, "pvfs://connection/transformation", "pvfs://connection/transformation.ktr" },
+      { false, "path/to/job", "path/to/job.kjb" },
+      { false, "path/to/job.kjb", "path/to/job.kjb" },
+      { false, "hdfs://server/path/job", "hdfs://server/path/job.kjb" },
+      { false, "zip:file:///archive.zip!/job", "zip:file:///archive.zip!/job.kjb" }
+    };
+
+    for ( Object[] data : testData ) {
+      boolean isTransMeta = (Boolean) data[ 0 ];
+      String inputPath = (String) data[ 1 ];
+      String expectedPath = (String) data[ 2 ];
+
+      MetaFileLoaderImpl<?> metaFileLoader;
+      if ( isTransMeta ) {
+        JobEntryTrans jobEntryTrans = mock( JobEntryTrans.class );
+        metaFileLoader = new MetaFileLoaderImpl<>( jobEntryTrans, ObjectLocationSpecificationMethod.FILENAME );
+      } else {
+        JobEntryJob jobEntryJob = mock( JobEntryJob.class );
+        metaFileLoader = new MetaFileLoaderImpl<>( jobEntryJob, ObjectLocationSpecificationMethod.FILENAME );
+      }
+
+      String result = invokeEnsureFilePathHasExtension( metaFileLoader, inputPath );
+
+      assertEquals( "Failed for input: " + inputPath, expectedPath, result );
+    }
+  }
+
+  private String invokeEnsureFilePathHasExtension( MetaFileLoaderImpl<?> metaFileLoader, String metaPath )
+    throws Exception {
+    java.lang.reflect.Method method =
+      MetaFileLoaderImpl.class.getDeclaredMethod( "ensureFilePathHasExtension", String.class );
+    method.setAccessible( true );
+    return (String) method.invoke( metaFileLoader, metaPath );
+  }
 }
